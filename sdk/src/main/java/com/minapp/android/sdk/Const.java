@@ -8,6 +8,7 @@ public abstract class Const {
     public static final String HTTP_HEADER_AUTH = "authorization";
     public static final String HTTP_HEADER_PLATFORM = "X-Hydrogen-Client-Platform";
     public static final String HTTP_HEADER_VERSION = "X-Hydrogen-Client-Version";
+    public static final String HTTP_HEADER_ENV = "X-Hydrogen-Env-ID";
 
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
     public static final String MEDIA_TYPE_JSON = "application/json";
@@ -23,4 +24,9 @@ public abstract class Const {
 
     public static final String WX_OAUTH_SCOPE = "snsapi_userinfo";
     public static final String WX_OAUTH_STATE = "wechat_sdk_demo_test";
+
+    public static final String WAMP_DEFAULT_PATH = "wss://api.ws.myminapp.com/ws/hydrogen/";
+
+    public static final String WAMP_REALM = "com.ifanrcloud";
+    public static final String WAMP_TOPIC_PREFIX = "com.ifanrcloud.schema_event";
 }

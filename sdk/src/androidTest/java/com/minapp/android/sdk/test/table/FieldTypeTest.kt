@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken
 import com.minapp.android.sdk.R
 import com.minapp.android.sdk.auth.Auth
 import com.minapp.android.sdk.storage.Storage
-import com.minapp.android.sdk.test.Util
+import com.minapp.android.sdk.test.util.Util
 import com.minapp.android.sdk.user.User
 import org.junit.Assert.*
 import org.junit.Test

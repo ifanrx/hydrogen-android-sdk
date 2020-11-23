@@ -7,6 +7,10 @@ import com.minapp.android.sdk.database.query.Query;
 import com.minapp.android.sdk.util.PagedList;
 import com.minapp.android.sdk.util.BaseCallback;
 import com.minapp.android.sdk.util.Util;
+import com.minapp.android.sdk.ws.SessionManager;
+import com.minapp.android.sdk.ws.SubscribeCallback;
+import com.minapp.android.sdk.ws.SubscribeEvent;
+import com.minapp.android.sdk.ws.WampSubscription;
 
 import java.util.Collection;
 import java.util.List;
@@ -233,4 +237,13 @@ public class Table {
         });
     }
 
+
+    public WampSubscription subscribe(@NonNull Query query, @NonNull SubscribeEvent event,
+                                      @NonNull SubscribeCallback cb) {
+        return SessionManager.get().subscribe(this, query, event, cb);
+    }
+
+    public WampSubscription subscribe(@NonNull SubscribeEvent event, @NonNull SubscribeCallback cb) {
+        return subscribe(new Query(), event, cb);
+    }
 }

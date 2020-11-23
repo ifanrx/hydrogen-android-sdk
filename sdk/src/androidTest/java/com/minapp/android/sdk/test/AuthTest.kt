@@ -4,6 +4,7 @@ import com.minapp.android.sdk.auth.Auth
 import com.minapp.android.sdk.auth.model.SignInWithPhoneRequest
 import com.minapp.android.sdk.exception.HttpException
 import com.minapp.android.sdk.test.base.BaseAndroidTest
+import com.minapp.android.sdk.test.util.Util
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runners.MethodSorters

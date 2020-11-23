@@ -1,3 +1,5 @@
 
 include ':weibo_test'
 include ':app', ':sdk', ':wxpay_test', ':test'
+include ':vivo_push_wrapper'
+include ':danmu'

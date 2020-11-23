@@ -1,12 +1,13 @@
 package com.minapp.android.sdk.test.table
 
+import android.util.Log
 import com.minapp.android.sdk.BaaS
 import com.minapp.android.sdk.database.Record
 import com.minapp.android.sdk.database.query.Query
 import com.minapp.android.sdk.database.query.Where
 import com.minapp.android.sdk.exception.HttpException
 import com.minapp.android.sdk.model.BatchOperationResp
-import com.minapp.android.sdk.test.Util
+import com.minapp.android.sdk.test.util.Util
 import org.junit.Assert.*
 import org.junit.Test
 

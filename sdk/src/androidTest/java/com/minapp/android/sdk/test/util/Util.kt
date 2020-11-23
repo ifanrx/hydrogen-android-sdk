@@ -1,4 +1,4 @@
-package com.minapp.android.sdk.test
+package com.minapp.android.sdk.test.util
 
 import java.util.*
 

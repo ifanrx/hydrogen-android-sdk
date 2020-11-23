@@ -20,11 +20,16 @@ import com.minapp.android.example.user.list.UserListActivity
 import com.minapp.android.example.util.Glide4Engine
 import com.minapp.android.example.util.Util
 import com.minapp.android.sdk.Config
+import com.minapp.android.sdk.Global
 import com.minapp.android.sdk.auth.Auth
 import com.minapp.android.sdk.database.*
 import com.minapp.android.sdk.storage.Storage
+import com.minapp.android.sdk.ws.SessionListenerAdapter
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
+import io.crossbar.autobahn.wamp.Client
+import io.crossbar.autobahn.wamp.Session
+import io.crossbar.autobahn.wamp.interfaces.TriConsumer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -57,6 +62,30 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
         init()
+
+        Global.post { wsTest() }
+    }
+
+    private fun wsTest() {
+        val TAG = "WebSocket"
+        val listener = SessionListenerAdapter()
+        val session = Session(Global.executorService())
+        session.addOnConnectListener(listener)
+        session.addOnDisconnectListener(listener)
+        session.addOnJoinListener(listener)
+        session.addOnLeaveListener(listener)
+        session.addOnUserErrorListener(listener)
+        session.addOnReadyListener(listener)
+
+        val client = Client(session, "wss://api.ws.myminapp.com/ws/hydrogen/", "")
+        client.connect().whenComplete { t, u ->
+            val subscription = session.subscribe(
+                "com.ifanrcloud.schema_event.danmu.on_create",
+                TriConsumer { var1, var2, var3 ->
+
+                })
+                .join()
+        }.join()
     }
 
     fun init() {

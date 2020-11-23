@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Global {
@@ -35,7 +36,7 @@ public abstract class Global {
     private static HttpApi HTTP_API;
     private static Gson GSON;
     private static Gson GSON_PRINT;
-    private static ExecutorService EXECUTOR_SERVICE;
+    private static ScheduledExecutorService EXECUTOR_SERVICE;
     private static Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private static Application APP = null;
     private static OkHttpClient CLIENT = null;
@@ -51,7 +52,10 @@ public abstract class Global {
 
 
     public static void postOnMain(@NonNull Runnable runnable) {
-        MAIN_HANDLER.post(runnable);
+        if (Util.isOnMain())
+            runnable.run();
+        else
+            MAIN_HANDLER.post(runnable);
     }
 
     public static HttpApi httpApi() {
@@ -97,15 +101,23 @@ public abstract class Global {
         return GSON_PRINT;
     }
 
-    public static Future<?> submit(Runnable task) {
-        return executorService().submit(task);
+    public static void post(Runnable task) {
+        postDelayed(task, 0);
     }
 
-    static ExecutorService executorService() {
+    public static void submit(Runnable task) {
+        post(task);
+    }
+
+    public static void postDelayed(Runnable job, long delayMillis) {
+        executorService().schedule(job, delayMillis, TimeUnit.MILLISECONDS);
+    }
+
+    public static ScheduledExecutorService executorService() {
         if (EXECUTOR_SERVICE == null) {
             synchronized (Global.class) {
                 if (EXECUTOR_SERVICE == null) {
-                    EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
+                    EXECUTOR_SERVICE = Executors.newScheduledThreadPool(5);
                 }
             }
         }

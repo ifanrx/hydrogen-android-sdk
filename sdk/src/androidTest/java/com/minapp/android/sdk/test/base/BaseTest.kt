@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.minapp.android.sdk.test.TestConst
+import com.minapp.android.sdk.test.util.TestConst
 import org.junit.After
 import org.junit.runner.RunWith
 

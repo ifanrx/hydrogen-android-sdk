@@ -1,7 +1,7 @@
 package com.minapp.android.sdk.test.base
 
 import com.minapp.android.sdk.auth.Auth
-import com.minapp.android.sdk.test.Util
+import com.minapp.android.sdk.test.util.Util
 import org.junit.AfterClass
 import org.junit.BeforeClass
 

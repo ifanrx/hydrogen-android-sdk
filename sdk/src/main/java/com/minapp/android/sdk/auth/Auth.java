@@ -48,14 +48,7 @@ public abstract class Auth {
      * 当 sdk 初始化时 {@link BaaS#init(String, Application)}，必须调用此方法初始化 auth 模块
      */
     public static void init() {
-        Global.submit(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (AUTH_INFO) {
-                    restoreAuthData();
-                }
-            }
-        });
+        restoreAuthData();
     }
 
 
@@ -382,7 +375,7 @@ public abstract class Auth {
     }
 
 
-    static @Nullable String token() {
+    public static @Nullable String token() {
         return (String) AUTH_INFO.get(TOKEN);
     }
 

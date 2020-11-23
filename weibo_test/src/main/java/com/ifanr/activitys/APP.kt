@@ -11,8 +11,8 @@ class APP: Application() {
         super.onCreate()
 
         // TODO 初始化
-        BaaS.init("", "", this)
-        BaaS.initWeiboComponent(this, "", "", "")
+        BaaS.init("a4d2d62965ddb57fa4d6", this)
+        BaaS.initWeiboComponent(this, "1440651666", "http://sns.whalecloud.com/sina2/callback", "email")
     }
 }
 

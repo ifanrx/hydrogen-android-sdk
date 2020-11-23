@@ -28,6 +28,11 @@ public class AuthInterceptor implements Interceptor {
             builder.header(Const.HTTP_HEADER_AUTH, Const.HTTP_HEADER_AUTH_PREFIX + token);
         }
 
+        String envId = Config.getEnvId();
+        if (envId != null) {
+            builder.header(Const.HTTP_HEADER_ENV, envId);
+        }
+
         builder.header(Const.HTTP_HEADER_PLATFORM, Const.SDK_PLATFORM);
         builder.header(Const.HTTP_HEADER_VERSION, BuildConfig.VERSION_NAME);
         return chain.proceed(builder.build());

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.Callable;
 
+import io.crossbar.autobahn.Autobahn;
 import okhttp3.ResponseBody;
 
 public class BaaS {
@@ -68,9 +69,20 @@ public class BaaS {
      * @param host      设置自定义域名
      */
     public static void init(String clientId, String host, @NonNull Application application) {
+        init(clientId, host, null, application);
+    }
+
+    /**
+     * 完成 sdk 的初始化
+     * @param clientId  ID 为知晓云应用的 ClientID，可通过知晓云管理后台进行获取
+     * @param host      设置自定义域名
+     * @param envId     环境 ID，比如测试环境的 ID
+     */
+    public static void init(String clientId, String host, String envId, @NonNull Application application) {
         Util.assetNotNull(application);
         Config.setClientId(clientId);
         Config.setEndpoint(host);
+        Config.setEnvId(envId);
         Global.setApplicaiton(application);
         Auth.init();
     }

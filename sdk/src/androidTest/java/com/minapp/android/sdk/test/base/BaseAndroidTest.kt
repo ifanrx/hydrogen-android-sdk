@@ -1,14 +1,8 @@
 package com.minapp.android.sdk.test.base
 
-import android.app.Application
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.minapp.android.sdk.BaaS
-import com.minapp.android.sdk.test.TestConst
-import org.junit.After
+import com.minapp.android.sdk.test.util.TestConst
 import org.junit.BeforeClass
-import org.junit.runner.RunWith
 
 abstract class BaseAndroidTest: BaseTest() {
     companion object {

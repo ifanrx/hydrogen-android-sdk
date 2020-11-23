@@ -16,6 +16,7 @@ public class Config {
     private Config() {}
 
     public static final String CLIENT_ID = "CLIENT_ID";
+    public static final String ENV_ID = "ENV_ID";
 
     /**
      * 自定义域名
@@ -46,5 +47,14 @@ public class Config {
                 return endpoint;
         }
         return DEFAULT_ENDPOINT;
+    }
+
+    public static void setEnvId(String envId) {
+        CONFIG.put(ENV_ID, envId);
+    }
+
+    public static @Nullable String getEnvId() {
+        Object value = CONFIG.get(ENV_ID);
+        return value != null ? (String) value : null;
     }
 }

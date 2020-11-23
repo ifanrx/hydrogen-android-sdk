@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId "com.minapp.android.example.wechat.pay"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion minSdkVer
+        targetSdkVersion targetSdkVer
         versionCode 1
         versionName "1.0"
 

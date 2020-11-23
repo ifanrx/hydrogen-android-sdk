@@ -4,6 +4,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.minapp.android.sdk.BaaS
 import com.minapp.android.sdk.auth.Auth
+import com.minapp.android.sdk.test.util.TestConst
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.net.UnknownHostException

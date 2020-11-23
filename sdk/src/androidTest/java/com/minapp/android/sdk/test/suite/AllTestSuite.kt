@@ -12,6 +12,7 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     DatabaseTest::class, FieldTypeTest::class, GeoTest::class, QueryTest::class,
     StorageTest::class, SmsTest::class, ContentTest::class, CloudFuncTest::class,
-    CurrentUserTest::class, AuthTest::class, ServerDateTest::class
+    CurrentUserTest::class, AuthTest::class, ServerDateTest::class, EnvTest::class,
+    WebSocketTest::class
 )
 class AllTestSuite
