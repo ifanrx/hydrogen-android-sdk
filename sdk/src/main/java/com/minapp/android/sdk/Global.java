@@ -40,6 +40,14 @@ public abstract class Global {
     private static Application APP = null;
     private static OkHttpClient CLIENT = null;
 
+    private static DoubleCheckProvider<HttpApi> UPLOAD_HTTP_API =
+            new DoubleCheckProvider<HttpApi>(Global.class) {
+                @Override
+                public HttpApi create() {
+                    return createHttpApi(createHttpClient(0));
+                }
+            };
+
 
     public static @Nullable Application getApplication() {
         return APP;
@@ -54,17 +62,19 @@ public abstract class Global {
         MAIN_HANDLER.post(runnable);
     }
 
+    /**
+     * 不设置超时，用来上传文件
+     * @return
+     */
+    public static HttpApi uploadHttpApi() {
+        return UPLOAD_HTTP_API.get();
+    }
+
     public static HttpApi httpApi() {
         if (HTTP_API == null) {
             synchronized (Global.class) {
                 if (HTTP_API == null) {
-                    HTTP_API = new Retrofit.Builder()
-                            .client(httpClient())
-                            .addConverterFactory(GsonConverterFactory.create(gson()))
-                            .addCallAdapterFactory(new CheckedCallAdapterFactory())
-                            .baseUrl(Config.getEndpoint())
-                            .build()
-                            .create(HttpApi.class);
+                    HTTP_API = createHttpApi(httpClient());
                 }
             }
         }
@@ -135,21 +145,36 @@ public abstract class Global {
         if (CLIENT == null) {
             synchronized (Global.class) {
                 if (CLIENT == null) {
-                    CLIENT = new OkHttpClient.Builder()
-                            .followRedirects(true)
-                            .followSslRedirects(true)
-                            .connectTimeout(Const.HTTP_TIMEOUT, TimeUnit.MILLISECONDS)
-                            .readTimeout(Const.HTTP_TIMEOUT, TimeUnit.MILLISECONDS)
-                            .writeTimeout(Const.HTTP_TIMEOUT, TimeUnit.MILLISECONDS)
-                            .cookieJar(new MemoryCookieJar())
-                            .retryOnConnectionFailure(true)
-                            .addNetworkInterceptor(new AuthInterceptor())
-                            .addNetworkInterceptor(new ContentTypeInterceptor())
-                            .build();
+                    CLIENT = createHttpClient(Const.HTTP_TIMEOUT);
                 }
             }
         }
         return CLIENT;
+    }
+
+    private static HttpApi createHttpApi(OkHttpClient client) {
+        return new Retrofit.Builder()
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson()))
+                .addCallAdapterFactory(new CheckedCallAdapterFactory())
+                .baseUrl(Config.getEndpoint())
+                .build()
+                .create(HttpApi.class);
+    }
+
+
+    private static OkHttpClient createHttpClient(long timeoutMills) {
+        return new OkHttpClient.Builder()
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .connectTimeout(timeoutMills, TimeUnit.MILLISECONDS)
+                .readTimeout(timeoutMills, TimeUnit.MILLISECONDS)
+                .writeTimeout(timeoutMills, TimeUnit.MILLISECONDS)
+                .cookieJar(new MemoryCookieJar())
+                .retryOnConnectionFailure(true)
+                .addNetworkInterceptor(new AuthInterceptor())
+                .addNetworkInterceptor(new ContentTypeInterceptor())
+                .build();
     }
 
 }

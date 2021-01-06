@@ -67,7 +67,7 @@ class RecordTest: BaseUnitTest() {
         val expected = """
             {"favorited_fruit":{"${Record.UPDATE}":{"name":"apple","price":2.5,"taxed":true}}}
         """.trimIndent()
-        assertEquals(expected, toJson(record.update("favorited_fruit", template)))
+        assertEquals(expected, toJson(record.patchObject("favorited_fruit", template)))
     }
 
     @Test

@@ -2,15 +2,40 @@ package com.minapp.android.sdk.test.table
 
 import com.minapp.android.sdk.BaaS
 import com.minapp.android.sdk.database.Record
+import com.minapp.android.sdk.database.SaveOptions
 import com.minapp.android.sdk.database.query.Query
 import com.minapp.android.sdk.database.query.Where
 import com.minapp.android.sdk.exception.HttpException
 import com.minapp.android.sdk.model.BatchOperationResp
 import com.minapp.android.sdk.test.Util
+import com.minapp.android.sdk.user.User
+import com.minapp.android.sdk.util.BaseCallback
 import org.junit.Assert.*
 import org.junit.Test
 
 class DatabaseTest: BaseTableTest() {
+
+    /**
+     * 测试 save options 参数
+     */
+    @Test
+    fun saveOptionsTest() {
+        val record = table.createRecord()
+        record.put(TableContract.NAME, "Jesse")
+        record.put(TableContract.AGE, 30)
+        val getCreatedByEmail: (Record) -> String? = {
+            it.getJsonObject(Record.CREATED_BY)?.get(User.EMAIL)?.asString
+        }
+
+        record.save()
+        assertNull(getCreatedByEmail(record))
+
+        record.put(TableContract.NAME, "harry")
+        record.save(SaveOptions().apply {
+            expand = listOf(Record.CREATED_BY)
+        })
+        assertNotNull(getCreatedByEmail(record))
+    }
 
     /**
      * 简单的增删改查操作

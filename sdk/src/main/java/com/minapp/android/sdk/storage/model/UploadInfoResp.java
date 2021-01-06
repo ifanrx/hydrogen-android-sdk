@@ -13,7 +13,7 @@ public class UploadInfoResp {
     @SerializedName("authorization")
     private String authorization;                     // 文件上传凭证
 
-    @SerializedName("file_link")
+    @SerializedName("path")
     private String fileLink;                          // 文件上传成功后的访问地址
 
     @SerializedName("upload_url")

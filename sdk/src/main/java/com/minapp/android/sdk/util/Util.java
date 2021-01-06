@@ -10,6 +10,8 @@ import com.minapp.android.sdk.Const;
 import com.minapp.android.sdk.Global;
 import com.minapp.android.sdk.database.Record;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -20,6 +22,13 @@ public abstract class Util {
     private static final String[] POINTER_FEATURE = new String[]{
             Record.ID, Record.TABLE
     };
+
+    public static void closeQuietly(@Nullable Closeable c) {
+        if (c == null) return;
+        try {
+            c.close();
+        } catch (Throwable ignored) {}
+    }
 
 
     public static <T> void inBackground(@NonNull final BaseCallback<T> cb, @NonNull final Callable<T> callable) {

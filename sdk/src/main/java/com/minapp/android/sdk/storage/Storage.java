@@ -1,6 +1,8 @@
 package com.minapp.android.sdk.storage;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.minapp.android.sdk.Global;
 import com.minapp.android.sdk.database.query.Query;
 import com.minapp.android.sdk.exception.HttpException;
@@ -8,11 +10,14 @@ import com.minapp.android.sdk.storage.model.BatchDeleteReq;
 import com.minapp.android.sdk.storage.model.UploadInfoReq;
 import com.minapp.android.sdk.storage.model.UploadInfoResp;
 import com.minapp.android.sdk.util.BaseCallback;
+import com.minapp.android.sdk.util.InputStreamRequestBody;
 import com.minapp.android.sdk.util.PagedList;
 import com.minapp.android.sdk.util.Util;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -23,37 +28,77 @@ public abstract class Storage {
     static final String PART_FILE = "file";
 
     /**
-     * 文件上传
-     * @param filename
-     * @param categoryId
-     * @param data
-     * @return {@link CloudFile#getId()}
-     * @throws Exception
-     * @see #uploadFile(String, String, byte[])
+     * 文件上传，分两步：<br />
+     * 1. 获取上传文件所需授权凭证和上传地址<br />
+     * 2. 使用上一步获取的授权凭证和上传地址，进行文件上传
      */
-    public static String uploadFileWithoutFetch(String filename, String categoryId, byte[] data) throws Exception {
-        return _uploadFile(filename, categoryId, data).getId();
+    private static UploadInfoResp _uploadFile(
+            String filename,
+            String categoryId,
+            InputStream in
+    ) throws Exception {
+        UploadInfoReq body = new UploadInfoReq();
+        body.setFileName(filename);
+        body.setCategoryId(categoryId);
+
+        int size = in.available();
+        if (size / 1024 / 1024 > 100) {
+            body.setFileSize(size);
+        }
+
+        UploadInfoResp meta = Global.httpApi().getUploadMeta(body).execute().body();
+
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(PART_AUTHORIZATION, meta.getAuthorization())
+                .addFormDataPart(PART_POLICY, meta.getPolicy())
+                .addFormDataPart(PART_FILE, filename, new InputStreamRequestBody(in))
+                .build();
+        Global.uploadHttpApi().uploadFile(meta.getUploadUrl(), multipartBody).execute();
+        return meta;
     }
 
     /**
      * 文件上传
-     * @param filename
-     * @param data
      * @return {@link CloudFile#getId()}
-     * @throws Exception
-     * @see #uploadFile(String, String, byte[])
+     */
+    public static String uploadFileWithoutFetch(
+            String filename,
+            String categoryId,
+            InputStream in
+    ) throws Exception {
+        return _uploadFile(filename, categoryId, in).getId();
+    }
+
+    /**
+     * 文件上传
+     * @return {@link CloudFile#getId()}
+     */
+    public static String uploadFileWithoutFetch(
+            String filename,
+            String categoryId,
+            byte[] data
+    ) throws Exception {
+        InputStream in = null;
+        try {
+            in = new ByteArrayInputStream(data);
+            return uploadFileWithoutFetch(filename, categoryId, in);
+        } finally {
+            Util.closeQuietly(in);
+        }
+    }
+
+    /**
+     * 文件上传
+     * @return {@link CloudFile#getId()}
      */
     public static String uploadFileWithoutFetch(String filename, byte[] data) throws Exception {
-        return _uploadFile(filename, null, data).getId();
+        return uploadFileWithoutFetch(filename, null, data);
     }
 
     /**
      * 文件上传
-     * @param filename
-     * @param categoryId
-     * @param data
      * @param cb 拿到 {@link CloudFile#getId()}
-     * @see #uploadFile(String, String, byte[])
      */
     public static void uploadFileWithoutFetchInBackground(
             final String filename, final String categoryId, final byte[] data, @NonNull final BaseCallback<String> cb) {
@@ -65,15 +110,12 @@ public abstract class Storage {
         });
     }
 
-
-    /**
-     * 文件上传，分两步：<br />
-     * 1. 获取上传文件所需授权凭证和上传地址<br />
-     * 2. 使用上一步获取的授权凭证和上传地址，进行文件上传
-     * @return {@link CloudFile}
-     */
-    public static CloudFile uploadFile(String filename, String categoryId, byte[] data) throws Exception {
-        UploadInfoResp meta = _uploadFile(filename, categoryId, data);
+    public static @Nullable CloudFile uploadFile(
+            String filename,
+            String categoryId,
+            InputStream in
+    ) throws Exception {
+        UploadInfoResp meta = _uploadFile(filename, categoryId, in);
         while (true) {
             try {
                 return file(meta.getId());
@@ -87,25 +129,27 @@ public abstract class Storage {
         }
     }
 
-    /**
-     * 文件上传
-     * @param filename
-     * @param data
-     * @return {@link CloudFile}
-     * @throws Exception
-     * @see #uploadFile(String, String, byte[])
-     */
+    public static CloudFile uploadFile(
+            String filename,
+            String categoryId,
+            byte[] data
+    ) throws Exception {
+        InputStream in = null;
+        try {
+            in = new ByteArrayInputStream(data);
+            return uploadFile(filename, categoryId, in);
+        } finally {
+            Util.closeQuietly(in);
+        }
+    }
+
     public static CloudFile uploadFile(String filename, byte[] data) throws Exception {
         return uploadFile(filename, null, data);
     }
 
     /**
      * 文件上传
-     * @param filename
-     * @param categoryId
-     * @param data
      * @param cb 拿到 {@link CloudFile}
-     * @see #uploadFile(String, String, byte[])
      */
     public static void uploadFileAndFetchInBackground(
             final String filename, final String categoryId, final byte[] data, @NonNull final BaseCallback<CloudFile> cb) {
@@ -115,25 +159,6 @@ public abstract class Storage {
                 return Storage.uploadFile(filename, categoryId, data);
             }
         });
-    }
-
-
-    private static UploadInfoResp _uploadFile(
-            String filename, String categoryId, byte[] data) throws Exception {
-        UploadInfoReq body = new UploadInfoReq();
-        body.setFileName(filename);
-        body.setCategoryId(categoryId);
-        UploadInfoResp meta = Global.httpApi().getUploadMeta(body).execute().body();
-
-        MultipartBody multipartBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(PART_AUTHORIZATION, meta.getAuthorization())
-                .addFormDataPart(PART_POLICY, meta.getPolicy())
-                .addFormDataPart(PART_FILE, filename, RequestBody.create(null, data))
-                .build();
-        Global.httpApi().uploadFile(meta.getUploadUrl(), multipartBody).execute();
-
-        return meta;
     }
 
 

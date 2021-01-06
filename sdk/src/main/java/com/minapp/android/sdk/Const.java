@@ -3,7 +3,7 @@ package com.minapp.android.sdk;
 public abstract class Const {
 
     public static final String TAG = "minapp-android-sdk";
-    public static final long HTTP_TIMEOUT = 20 * 1000;                              // http 读、写、连接的超时设置，单位毫秒
+    public static final long HTTP_TIMEOUT = 20 * 1000;      // http 读、写、连接的超时设置，单位毫秒
     public static final String HTTP_HEADER_AUTH_PREFIX = "Hydrogen-r1 ";
     public static final String HTTP_HEADER_AUTH = "authorization";
     public static final String HTTP_HEADER_PLATFORM = "X-Hydrogen-Client-Platform";

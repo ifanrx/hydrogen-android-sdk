@@ -187,14 +187,36 @@ public class Query extends HashMap<String, String> {
         return this;
     }
 
-    public Query keys(@NonNull Collection<String> keys) {
+    /**
+     * 使用 select 来控制请求返回的字段
+     *
+     * select('field') select(['field_a', 'field_b']) 为“规定返回”，
+     * select('-field') select(['-field_a', '-field_b']) 为“规定不返回”，
+     * “规定返回”和“规定不返回”不能同时使用，否则该操作不生效，接口将会直接返回所有字段。
+     *
+     * @param keys
+     * @return
+     * @see Query#KEYS
+     */
+    public Query select(@NonNull Collection<String> keys) {
         put(KEYS, Util.joinToNull(keys));
         return this;
     }
 
-    public Query keys(String... keys) {
+    /**
+     * 使用 select 来控制请求返回的字段
+     *
+     * select('field') select(['field_a', 'field_b']) 为“规定返回”，
+     * select('-field') select(['-field_a', '-field_b']) 为“规定不返回”，
+     * “规定返回”和“规定不返回”不能同时使用，否则该操作不生效，接口将会直接返回所有字段。
+     *
+     * @param keys
+     * @return
+     * @see Query#select(Collection)
+     */
+    public Query select(String... keys) {
         if (keys != null) {
-            keys(Arrays.asList(keys));
+            select(Arrays.asList(keys));
         }
         return this;
     }

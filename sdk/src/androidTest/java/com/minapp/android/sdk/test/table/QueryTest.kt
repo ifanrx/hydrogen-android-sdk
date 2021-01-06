@@ -9,6 +9,7 @@ import com.minapp.android.sdk.database.query.Where
 import com.minapp.android.sdk.test.Util
 import com.minapp.android.sdk.test.base.BaseAuthedTest
 import com.minapp.android.sdk.user.User
+import com.minapp.android.sdk.util.PagedList
 import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.Assert.*
@@ -114,14 +115,43 @@ class QueryTest: BaseAuthedTest() {
     }
 
     @Test
-    fun keysTest() {
-        var result = table.query(Query().keys(TableContract.NAME))
+    fun selectTest() {
+        var result = table.query(Query().select(TableContract.NAME))
         assertTrue(result.objects!!.all {
             it.getInt(TableContract.AGE) == null && it.getString(TableContract.NAME) != null
         })
 
-        result = table.query(Query().keys("-${TableContract.NAME}"))
+        result = table.query(Query().select("-${TableContract.NAME}"))
         assertTrue(result.objects!!.all { it.getString(TableContract.NAME) == null })
+    }
+
+    /**
+     * 测试过滤 expand field 里的字段如，expand_by.email
+     */
+    @Test
+    fun selectTest2() {
+        val id = passionFruit.id!!
+        var query = Query().apply {
+            put(Where().apply {
+                equalTo(Record.ID, id)
+            })
+            offset(0)
+            limit(1)
+            expand(TableContract.NEIGHBORHOOD)
+        }
+        val getEmail: ( List<Record>? ) -> String? = {
+            it?.firstOrNull()?.getJsonObject(TableContract.NEIGHBORHOOD)?.get(User.EMAIL)?.asString
+        }
+        val getId: ( List<Record>? ) -> String? = {
+            it?.firstOrNull()?.getJsonObject(TableContract.NEIGHBORHOOD)?.get(Record.ID)?.asString
+        }
+
+        var result = table.query(query).objects
+        assertTrue(!getEmail(result).isNullOrEmpty())
+
+        query = query.select("${TableContract.NEIGHBORHOOD}.${User.ID}")
+        result = table.query(query).objects
+        assertTrue(getEmail(result) == null && !getId(result).isNullOrEmpty())
     }
 
     @Test

@@ -9,7 +9,9 @@ import com.minapp.android.sdk.util.PagedListResponse;
 import com.minapp.android.sdk.database.query.*;
 import com.minapp.android.sdk.util.Util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Database {
 
@@ -36,6 +38,14 @@ public abstract class Database {
      * @param record
      */
     static void save(Record record) throws Exception {
+        save(record, null);
+    }
+
+    /**
+     * 新增 or 更新
+     * @param record
+     */
+    static void save(Record record, SaveOptions options) throws Exception {
         if (record != null && record.getTableName() != null) {
 
             // 这里要处理下 pointer 类型
@@ -49,14 +59,29 @@ public abstract class Database {
             }
 
             // 新增
+            Map<String, Object> query = new HashMap<>();
             if (record.getId() == null) {
-                Record response = Global.httpApi().saveRecord(clone.getTableName(), clone).execute().body();
+                if (options != null && options.expand != null && !options.expand.isEmpty()) {
+                    query.put(Query.EXPAND, Util.join(options.expand));
+                }
+                Record response = Global.httpApi()
+                        .saveRecord(clone.getTableName(), clone, query).execute().body();
                 record._setJson(response._getJson());
-
             } else {
 
                 // 更新
-                Record response = Global.httpApi().updateRecord(clone.getTableName(), clone.getId(), clone).execute().body();
+                if (options != null) {
+                    if (options.expand != null && !options.expand.isEmpty())
+                        query.put(Query.EXPAND, Util.join(options.expand));
+                    if (options.enableTrigger != null)
+                        query.put(Query.ENABLE_TRIGGER,
+                                options.enableTrigger ? Query.TRIGGER_ENABLE : Query.TRIGGER_DISABLE);
+                    if (options.withCount != null)
+                        query.put(Query.RETURN_TOTAL_COUNT,
+                                options.withCount ? Query.ENABLE_TOTAL_COUNT : Query.DISABLE_TOTAL_COUNT);
+                }
+                Record response = Global.httpApi()
+                        .updateRecord(clone.getTableName(), clone.getId(), clone, query).execute().body();
                 record._setJson(response._getJson());
             }
         }
