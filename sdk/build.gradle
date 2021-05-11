@@ -60,7 +60,6 @@ dependencies {
     api("com.squareup.retrofit2:converter-gson:2.5.0")
 
     api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.3.1'
-    api 'com.sina.weibo.sdk:core:4.3.7:openDefaultRelease@aar'
     api fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 }
 

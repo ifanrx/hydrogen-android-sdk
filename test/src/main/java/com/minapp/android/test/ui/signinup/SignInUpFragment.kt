@@ -114,8 +114,8 @@ class SignInUpFragment : BaseFragment() {
     private fun signIn(type: SignType, name: String, pwd: String) {
         val block: () -> User? = {
             when (type) {
-                SignType.EMAIL -> Auth.signInByEmail(name, pwd)
-                SignType.USERNAME -> Auth.signInByUsername(name, pwd)
+                SignType.EMAIL -> Auth.signInWithEmail(name, pwd)
+                SignType.USERNAME -> Auth.signInWithUsername(name, pwd)
                 SignType.ANONYMOUS -> {
                     Auth.signInAnonymous()
                     null
@@ -145,8 +145,8 @@ class SignInUpFragment : BaseFragment() {
     private fun signUp(type: SignType, name: String, pwd: String) {
         val block: () -> User? = {
             when (type) {
-                SignType.EMAIL -> Auth.signUpByEmail(name, pwd)
-                SignType.USERNAME -> Auth.signUpByUsername(name, pwd)
+                SignType.EMAIL -> Auth.signUpWithEmail(name, pwd)
+                SignType.USERNAME -> Auth.signUpWithUsername(name, pwd)
                 SignType.ANONYMOUS -> {
                     throw IllegalArgumentException("无法匿名注册")
                 }

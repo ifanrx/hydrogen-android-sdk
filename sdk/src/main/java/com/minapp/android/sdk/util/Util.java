@@ -23,6 +23,10 @@ public abstract class Util {
             Record.ID, Record.TABLE
     };
 
+    public static boolean isNullOrEmpty(String str) {
+        return trimToNull(str) == null;
+    }
+
     public static void closeQuietly(@Nullable Closeable c) {
         if (c == null) return;
         try {

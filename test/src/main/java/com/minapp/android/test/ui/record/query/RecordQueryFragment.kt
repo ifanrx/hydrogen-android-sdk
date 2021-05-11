@@ -127,7 +127,7 @@ private class DataSource (
             query.orderBy(state.orderBys)
 
         if (state.keys.isNotEmpty())
-            query.keys(state.keys)
+            query.select(state.keys)
 
         if (state.expands.isNotEmpty())
             query.expand(state.expands)

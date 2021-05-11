@@ -16,6 +16,29 @@ import org.junit.Test
 class DatabaseTest: BaseTableTest() {
 
     /**
+     * 更新 Record 时，ID 不能为空
+     */
+    @Test(expected = IllegalStateException::class)
+    fun updateWithNullId() {
+        val record = table.createRecord()
+        record.put(TableContract.NAME, "Jesse")
+        record.put(TableContract.AGE, 30)
+        record.update(null)
+    }
+
+    /**
+     * 更新 Record 时，ID 不能为空
+     */
+    @Test(expected = IllegalStateException::class)
+    fun updateWithEmptyId() {
+        val record = table.createRecord()
+        record.put(TableContract.NAME, "Jesse")
+        record.put(TableContract.AGE, 30)
+        record.put(Record.ID, " ")
+        record.update(null)
+    }
+
+    /**
      * 测试 save options 参数
      */
     @Test

@@ -42,7 +42,7 @@ class RecordCURDFragment: BaseFragment() {
         }
 
         setPropBtn.setOnClickListener {
-            printWithIO { fetchById().put(state.propName, state.propValue).save() }
+            printWithIO { fetchById().put(state.propName, state.propValue).update(null) }
         }
 
         delPropBtn.setOnClickListener {

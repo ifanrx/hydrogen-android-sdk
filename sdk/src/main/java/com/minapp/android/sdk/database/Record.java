@@ -86,6 +86,26 @@ public class Record {
     /*************************** CURD ***********************************/
 
 
+    public Record update(SaveOptions options) throws Exception {
+        String id = getId();
+        if (Util.isNullOrEmpty(id))
+            throw new IllegalStateException("ID can not be empty in update");
+        Database.save(this, options);
+        return this;
+    }
+
+
+    public void updateInBackground(SaveOptions options, @NonNull final BaseCallback<Record> callback) {
+        Util.inBackground(callback, new Callable<Record>() {
+            @Override
+            public Record call() throws Exception {
+                update(options);
+                return Record.this;
+            }
+        });
+    }
+
+
     public Record save() throws Exception {
         return save(null);
     }
